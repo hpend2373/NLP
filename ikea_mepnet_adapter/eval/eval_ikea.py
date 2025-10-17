@@ -694,12 +694,12 @@ def run_evaluation(
         output_dir: Output directory for results
     """
     import yaml
-    from datasets.ikea_dataset import IKEADataset
-    from models.perception.mepnet_adapted import create_mepnet_model, MEPNetConfig
-    from models.mepnet_plus.solver import PoseSolver
-    from models.constraints.constraint_engine_complete import ConstraintEngine
-    from assets.registry import AssetsRegistry
-    from planner.assembler import PlanAssembler
+    from ikea_mepnet_adapter.datasets.ikea_dataset import IKEADataset
+    from ikea_mepnet_adapter.models.perception.mepnet_adapted import create_mepnet_model, MEPNetConfig
+    from ikea_mepnet_adapter.models.mepnet_plus.solver import PoseSolver
+    from ikea_mepnet_adapter.models.constraints.constraint_engine_complete import ConstraintEngine
+    from ikea_mepnet_adapter.assets.registry import AssetsRegistry
+    from ikea_mepnet_adapter.planner.assembler import PlanAssembler
 
     # Load configuration
     with open(config_path, 'r') as f:

@@ -505,7 +505,8 @@ class IKEADataset(Dataset):
 
         # Lists and dictionaries - keep as lists
         for key in ['furniture_id', 'category', 'added_components',
-                    'camera', 'part_meshes', 'gt_poses', 'masks_2d', 'base_assembly']:
+                    'camera', 'part_meshes', 'gt_poses', 'masks_2d', 'base_assembly',
+                    'manual_connections', 'has_frame_supervision']:  # ADDED manual_connections
             if key in batch[0]:
                 collated[key] = [b[key] for b in batch]
 

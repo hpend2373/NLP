@@ -203,7 +203,7 @@ class ConstraintEngine:
         if hasattr(part_info, 'symmetry') and part_info.symmetry:
             # Try to import SymmetryType from the actual location
             try:
-                from assets.registry import SymmetryType
+                from ikea_mepnet_adapter.assets.registry import SymmetryType
                 # Check if symmetry is not NONE
                 if part_info.symmetry.symmetry_type != SymmetryType.NONE:
                     # Extract just R, t, score for symmetry generation, preserve metadata
@@ -551,7 +551,7 @@ class ConstraintEngine:
 
         # Import SymmetryType from registry if available
         try:
-            from assets.registry import SymmetryType
+            from ikea_mepnet_adapter.assets.registry import SymmetryType
         except ImportError:
             SymmetryType = None
 

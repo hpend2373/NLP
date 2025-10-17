@@ -10,8 +10,8 @@ from pathlib import Path
 # Add project root to path
 sys.path.append(str(Path(__file__).parent))
 
-from models.constraints.constraint_engine_final import ConstraintEngine, AssemblyState
-from assets.registry import AssetsRegistry, PartInfo, ConnectionPoint, ConnectionType
+from ikea_mepnet_adapter.models.constraints.constraint_engine_final import ConstraintEngine, AssemblyState
+from ikea_mepnet_adapter.assets.registry import AssetsRegistry, PartInfo, ConnectionPoint, ConnectionType
 import trimesh
 
 def create_test_registry():

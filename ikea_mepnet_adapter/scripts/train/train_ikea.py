@@ -31,20 +31,16 @@ for path in (ROOT_DIR, ROOT_PARENT):
     if path_str not in sys.path:
         sys.path.insert(0, path_str)
 
-try:
-    from datasets.ikea_dataset import IKEADataset
-    from datasets.transforms_ikea import get_train_transforms, get_val_transforms
-except ModuleNotFoundError:
-    # Fallback to fully-qualified imports when running outside package context
-    from ikea_mepnet_adapter.datasets.ikea_dataset import IKEADataset
-    from ikea_mepnet_adapter.datasets.transforms_ikea import (
-        get_train_transforms,
-        get_val_transforms,
-    )
-from models.perception.mepnet_adapted import create_mepnet_model, MEPNetConfig
-from models.perception.hourglass import HourglassNet
-from assets.registry import AssetsRegistry
-from eval.eval_ikea import IKEAEvaluator
+# Always use fully-qualified imports for reliability
+from ikea_mepnet_adapter.datasets.ikea_dataset import IKEADataset
+from ikea_mepnet_adapter.datasets.transforms_ikea import (
+    get_train_transforms,
+    get_val_transforms,
+)
+from ikea_mepnet_adapter.models.perception.mepnet_adapted import create_mepnet_model, MEPNetConfig
+from ikea_mepnet_adapter.models.perception.hourglass import HourglassNet
+from ikea_mepnet_adapter.assets.registry import AssetsRegistry
+from ikea_mepnet_adapter.eval.eval_ikea import IKEAEvaluator
 
 
 class MEPNetLoss(nn.Module):
