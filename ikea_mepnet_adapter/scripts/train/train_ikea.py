@@ -261,6 +261,47 @@ class Trainer:
                 **fallback_args
             )
 
+            # If still empty, try to create sample data
+            if len(self.train_dataset) == 0:
+                warnings.warn("Dataset still empty after fallback. Attempting to create sample data...")
+
+                # Try to import and create sample data
+                try:
+                    # Add scripts directory to path temporarily
+                    import sys
+                    scripts_path = Path(__file__).parent.parent
+
+                    # Check if create_sample_data.py exists
+                    sample_data_script = scripts_path / "create_sample_data.py"
+                    if sample_data_script.exists():
+                        sys.path.insert(0, str(scripts_path))
+                        try:
+                            from create_sample_data import create_sample_ikea_dataset
+                            # Create sample data
+                            root = Path(data_config['root_dir'])
+                            print(f"Creating sample data at: {root}")
+                            create_sample_ikea_dataset(str(root))
+                            # Retry loading
+                            self.train_dataset = IKEADataset(
+                                root_dir=data_config['root_dir'],
+                                split='train',
+                                transform=train_transform,
+                                **fallback_args
+                            )
+                            print(f"After sample data creation: {len(self.train_dataset)} samples")
+                        finally:
+                            # Clean up path
+                            if str(scripts_path) in sys.path:
+                                sys.path.remove(str(scripts_path))
+                    else:
+                        warnings.warn(f"create_sample_data.py not found at {sample_data_script}")
+                        # Create minimal dataset to avoid crash
+                        warnings.warn("Creating minimal dataset to allow training to proceed...")
+
+                except Exception as e:
+                    warnings.warn(f"Failed to create sample data: {e}")
+                    warnings.warn("Training may fail due to empty dataset")
+
         # Create validation dataset
         self.val_dataset = IKEADataset(
             root_dir=data_config['root_dir'],

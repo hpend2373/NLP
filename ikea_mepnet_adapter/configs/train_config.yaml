@@ -34,7 +34,7 @@ model:
 
 # Data configuration
 data:
-  root_dir: "./IKEA-Manuals-at-Work"
+  root_dir: "/content/IKEA-Manuals-at-Work"  # For Colab - update this path as needed
 
   dataset_args:
     load_meshes: true
