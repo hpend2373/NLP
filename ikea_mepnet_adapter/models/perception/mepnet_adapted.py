@@ -371,7 +371,19 @@ class MEPNetAdapted(nn.Module):
         # Shape encoding
         shape_encoding = None
         if self.config.use_shape_condition and shape is not None:
-            shape_encoding = self.shape_encoder(shape)
+            # Handle list of shapes (batch)
+            if isinstance(shape, list):
+                # If list is empty or contains None, skip shape encoding
+                if not shape or all(s is None for s in shape):
+                    shape_encoding = None
+                else:
+                    # For now, disable shape encoding when meshes are lists
+                    # TODO: Implement proper batched shape encoding
+                    shape_encoding = None
+            elif isinstance(shape, torch.Tensor) and shape.numel() > 0:
+                shape_encoding = self.shape_encoder(shape)
+            else:
+                shape_encoding = None
 
         # Hourglass forward pass
         features_list = self.hourglass(image, shape_encoding)

@@ -531,19 +531,26 @@ class IKEADataset(Dataset):
         if isinstance(sample['manual_step_image'], np.ndarray):
             # HWC to CHW format
             image = sample['manual_step_image'].transpose(2, 0, 1)
-            sample['manual_step_image'] = torch.from_numpy(image).float() / 255.0
+            # Make sure it's float32, not float64
+            sample['manual_step_image'] = torch.from_numpy(image.astype(np.float32)) / 255.0
 
         # Camera parameters to tensor
         for key in ['K', 'R', 't']:
             if key in sample['camera']:
-                sample['camera'][key] = torch.from_numpy(sample['camera'][key]).float()
+                if isinstance(sample['camera'][key], np.ndarray):
+                    sample['camera'][key] = torch.from_numpy(sample['camera'][key]).float()
+                elif not isinstance(sample['camera'][key], torch.Tensor):
+                    sample['camera'][key] = torch.tensor(sample['camera'][key]).float()
 
         # Poses to tensor
         if sample['gt_poses']:
             for pose in sample['gt_poses']:
                 for key in ['R', 't']:
                     if key in pose:
-                        pose[key] = torch.from_numpy(pose[key]).float()
+                        if isinstance(pose[key], np.ndarray):
+                            pose[key] = torch.from_numpy(pose[key]).float()
+                        elif not isinstance(pose[key], torch.Tensor):
+                            pose[key] = torch.tensor(pose[key]).float()
 
         # Masks to tensor
         if sample['masks_2d'] is not None:

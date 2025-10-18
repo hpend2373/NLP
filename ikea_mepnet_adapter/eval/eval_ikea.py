@@ -17,7 +17,11 @@ import warnings
 import pickle
 
 # Metrics
-from chamferdist import ChamferDistance
+try:
+    from chamferdist import ChamferDistance
+except ImportError:
+    ChamferDistance = None
+    warnings.warn("ChamferDistance not available, chamfer distance metrics will be disabled")
 import trimesh
 
 
@@ -53,7 +57,7 @@ class IKEAEvaluator:
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
         # Initialize metrics
-        self.chamfer_dist = ChamferDistance() if torch.cuda.is_available() else None
+        self.chamfer_dist = ChamferDistance() if (ChamferDistance is not None and torch.cuda.is_available()) else None
 
         # Results storage
         self.results = defaultdict(list)

@@ -316,14 +316,10 @@ class HourglassNet(nn.Module):
             y = self.hourglasses[i](x, shape_cond)
 
             # Post-processing
-            y = self.features_after_hg[i](y)
-            if isinstance(y, nn.Sequential):
-                # Apply shape conditioning to each block in sequence
-                for block in y:
-                    if hasattr(block, 'forward'):
-                        y = block(y, shape_cond)
-            else:
-                y = self.features_after_hg[i](y, shape_cond)
+            # features_after_hg[i] is a Sequential of ResidualBlocks
+            # We need to apply each block with shape_cond
+            for block in self.features_after_hg[i]:
+                y = block(y, shape_cond)
 
             y = self.features_before_out[i](y)
 

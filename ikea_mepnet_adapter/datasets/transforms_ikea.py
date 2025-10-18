@@ -26,8 +26,11 @@ class ImageNormalize(IKEATransform):
                 # Assume image is in [0, 1] range and CHW format
                 sample['manual_step_image'] = (sample['manual_step_image'] - self.mean) / self.std
             elif isinstance(sample['manual_step_image'], torch.Tensor):
-                mean = torch.tensor(self.mean).to(sample['manual_step_image'].device)
-                std = torch.tensor(self.std).to(sample['manual_step_image'].device)
+                # Ensure float32
+                if sample['manual_step_image'].dtype != torch.float32:
+                    sample['manual_step_image'] = sample['manual_step_image'].float()
+                mean = torch.tensor(self.mean, dtype=torch.float32).to(sample['manual_step_image'].device)
+                std = torch.tensor(self.std, dtype=torch.float32).to(sample['manual_step_image'].device)
                 sample['manual_step_image'] = (sample['manual_step_image'] - mean) / std
         return sample
 
@@ -112,7 +115,13 @@ class RandomScale(IKEATransform):
 
         # Scale camera intrinsics
         if 'camera' in sample and 'K' in sample['camera']:
-            sample['camera']['K'][:2] *= scale
+            K = sample['camera']['K']
+            if isinstance(K, torch.Tensor):
+                sample['camera']['K'] = K.clone()
+                sample['camera']['K'][:2] = sample['camera']['K'][:2] * scale
+            else:
+                sample['camera']['K'] = K.astype(np.float32)
+                sample['camera']['K'][:2] = sample['camera']['K'][:2] * scale
 
         # Scale translations
         if 'gt_poses' in sample:
@@ -265,7 +274,8 @@ class ToTensor(IKEATransform):
             # HWC to CHW
             if len(sample['manual_step_image'].shape) == 3:
                 sample['manual_step_image'] = sample['manual_step_image'].transpose(2, 0, 1)
-            sample['manual_step_image'] = torch.from_numpy(sample['manual_step_image']).float()
+            # Ensure float32, not float64
+            sample['manual_step_image'] = torch.from_numpy(sample['manual_step_image'].astype(np.float32)).float()
 
         # Camera
         if 'camera' in sample:

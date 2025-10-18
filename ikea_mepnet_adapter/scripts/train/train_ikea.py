@@ -17,7 +17,11 @@ from torch.optim import Adam, AdamW
 from torch.optim.lr_scheduler import CosineAnnealingLR, ReduceLROnPlateau
 from pathlib import Path
 from tqdm import tqdm
-import wandb
+try:
+    import wandb
+except ImportError:
+    wandb = None
+    warnings.warn("wandb not installed, logging will be disabled")
 from typing import Dict, List, Optional, Any
 import warnings
 from datetime import datetime
@@ -459,11 +463,10 @@ class Trainer:
             # Prepare targets
             targets = self.prepare_targets(batch)
 
-            # Forward pass with manual connections
+            # Forward pass
             outputs = self.model(
                 batch['manual_step_image'],
                 batch.get('part_meshes'),
-                manual_connections=batch.get('manual_connections'),  # Pass manual connections
                 return_intermediate=True
             )
 
@@ -522,11 +525,10 @@ class Trainer:
                 # Prepare targets
                 targets = self.prepare_targets(batch)
 
-                # Forward pass with manual connections
+                # Forward pass
                 outputs = self.model(
                     batch['manual_step_image'],
-                    batch.get('part_meshes'),
-                    manual_connections=batch.get('manual_connections')  # Pass manual connections
+                    batch.get('part_meshes')
                 )
 
                 # Compute loss
